@@ -9,6 +9,7 @@
     </parent>
     <groupId>org.anc.lapps</groupId>
     <artifactId>opennlp</artifactId>
+    <packaging>war</packaging>
     <version>1.0.0-SNAPSHOT</version>
     <name>Tools: OpenNLP</name>
     <description>LAPPS wrappers for the OpenNLP toolchain.</description>
@@ -16,6 +17,12 @@
         <connection>https://github.com/ksuderman/org.anc.lapps.stanford.git</connection>
         <url>https://github.com/ksuderman/org.anc.lapps.stanford</url>
     </scm>
+    <properties>
+        <lapps.version>1.0.1-SNAPSHOT</lapps.version>
+    </properties>
+    <build>
+        <finalName>OpenNLPServices</finalName>
+    </build>
     <dependencies>
         <dependency>
             <groupId>org.apache.opennlp</groupId>
@@ -25,22 +32,22 @@
         <dependency>
             <groupId>org.anc</groupId>
             <artifactId>common</artifactId>
-            <version>3.1.0</version>
+            <version>3.1.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lappsgrid</groupId>
+            <artifactId>service-grid-libs</artifactId>
+            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.lappsgrid</groupId>
             <artifactId>api</artifactId>
-            <version>1.0.0</version>
+            <version>${lapps.version}</version>
         </dependency>
         <dependency>
             <groupId>org.lappsgrid</groupId>
             <artifactId>core</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.lappsgrid</groupId>
-            <artifactId>utils</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${lapps.version}</version>
         </dependency>
         <dependency>
             <groupId>org.lappsgrid.test</groupId>

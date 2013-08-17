@@ -8,10 +8,10 @@ import opennlp.tools.sentdetect.SentenceModel;
 
 import opennlp.tools.sentdetect.SentenceDetector;
 
+import org.anc.resource.ResourceLoader;
 import org.lappsgrid.api.*;
 import org.lappsgrid.core.DataFactory;
 import org.lappsgrid.discriminator.Types;
-import org.lappsgrid.utils.ResourceLoader;
 
 //import opennlp.tools.lang.english
 public class SentenceSplitter implements WebService
@@ -20,8 +20,12 @@ public class SentenceSplitter implements WebService
 
     public SentenceSplitter() throws IOException
     {
-        ResourceLoader loader = new ResourceLoader();
-        InputStream stream = loader.open("en-sent.bin");
+       ClassLoader loader = Thread.currentThread().getContextClassLoader();
+       if (loader == null)
+       {
+          loader = SentenceSplitter.class.getClassLoader();
+       }
+        InputStream stream = loader.getResourceAsStream("en-sent.bin");
         if (stream == null)
         {
             throw new IOException("Unable to load sentence model.");
@@ -71,8 +75,7 @@ public class SentenceSplitter implements WebService
 
     public static void main(String[] args)
     {
-        ResourceLoader loader = new ResourceLoader();
-        InputStream stream = loader.open("en-sent.bin");
+        InputStream stream = ResourceLoader.open("en-sent.bin");
         if (stream == null)
         {
             System.out.println("Sentence model not found.");

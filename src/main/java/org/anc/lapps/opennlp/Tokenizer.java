@@ -2,11 +2,11 @@ package org.anc.lapps.opennlp;
 
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
+import org.anc.resource.ResourceLoader;
 import org.lappsgrid.api.Data;
 import org.lappsgrid.api.WebService;
 import org.lappsgrid.core.DataFactory;
 import org.lappsgrid.discriminator.Types;
-import org.lappsgrid.utils.ResourceLoader;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -20,13 +20,12 @@ public class Tokenizer implements WebService
 
     public Tokenizer()
     {
-        ResourceLoader loader = new ResourceLoader();
-        InputStream stream = loader.open("en-token.bin");
+        InputStream stream = ResourceLoader.open("en-token.bin");
         if (stream == null)
         {
             error = "Unable to load tokenizer model.";
         }
-        try
+        else try
         {
             try
             {
