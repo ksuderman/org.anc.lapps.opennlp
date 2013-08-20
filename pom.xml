@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.lappsgrid.maven</groupId>
         <artifactId>war-parent-pom</artifactId>
-        <version>1.0.0</version>
+        <version>1.2.0</version>
     </parent>
     <groupId>org.anc.lapps</groupId>
     <artifactId>opennlp</artifactId>
@@ -32,12 +32,7 @@
         <dependency>
             <groupId>org.anc</groupId>
             <artifactId>common</artifactId>
-            <version>3.1.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.lappsgrid</groupId>
-            <artifactId>service-grid-libs</artifactId>
-            <version>1.1.0</version>
+            <version>3.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.lappsgrid</groupId>
@@ -50,7 +45,7 @@
             <version>${lapps.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.lappsgrid.test</groupId>
+            <groupId>org.lappsgrid</groupId>
             <artifactId>discriminator</artifactId>
             <version>1.2.0</version>
         </dependency>

@@ -14,17 +14,22 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.anc.resource.ResourceLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Keith Suderman
  */
 public class Tagger implements WebService
 {
+   private static final Logger logger = LoggerFactory.getLogger(Tagger.class);
+
    protected POSTagger tagger;
    protected String error;
 
    public Tagger()
    {
+      logger.info("Creating OpenNLP tagger.");
 //      ResourceLoader loader = new ResourceLoader();
       InputStream stream = ResourceLoader.open("en-pos-maxent.bin");
       if (stream == null)
@@ -45,6 +50,7 @@ public class Tagger implements WebService
       }
       catch (IOException e)
       {
+         logger.error("Unable to create the tagger",e );
          if (tagger == null)
          {
             error = e.getMessage();
@@ -67,6 +73,7 @@ public class Tagger implements WebService
    @Override
    public Data execute(Data input)
    {
+      logger.info("Executing OpenNLP tagger.");
       if (tagger == null)
       {
          return DataFactory.error(error);
@@ -78,6 +85,7 @@ public class Tagger implements WebService
       }
       String[] sentences = input.getPayload().split("\\n+");
       String[] tagged = tagger.tag(sentences);
+      logger.info("Tagger complete.");
       return DataFactory.stringList(tagged);
    }
 
