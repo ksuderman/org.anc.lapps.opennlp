@@ -2,6 +2,8 @@ package org.anc.lapps.opennlp;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
@@ -20,7 +22,10 @@ import org.slf4j.LoggerFactory;
 public class SentenceSplitter implements WebService
 {
    private static final Logger logger = LoggerFactory.getLogger(SentenceSplitter.class);
-   protected SentenceDetector splitter;
+   private static final int POOL_SIZE = 4;
+
+//   protected SentenceDetector splitter;
+   protected BlockingQueue<SentenceDetector> pool;
 
    public SentenceSplitter() throws IOException
    {
@@ -36,10 +41,15 @@ public class SentenceSplitter implements WebService
       {
          throw new IOException("Unable to load sentence model.");
       }
+      pool = new ArrayBlockingQueue<SentenceDetector>(POOL_SIZE);
       try
       {
          SentenceModel model = new SentenceModel(stream);
-         splitter = new SentenceDetectorME(model);
+         //splitter = new SentenceDetectorME(model);
+         for (int i = 0; i < POOL_SIZE; ++i)
+         {
+            pool.add(new SentenceDetectorME(model));
+         }
       }
       finally
       {
@@ -67,14 +77,30 @@ public class SentenceSplitter implements WebService
          logger.error("Invalid input. Expected text found {}", type);
          return DataFactory.error("Invalid input type, expected TEXT, found " + type);
       }
-      String[] sentences = splitter.sentDetect(input.getPayload());
-      logger.info("Execution complete.");
-      return DataFactory.stringList(sentences);
+      SentenceDetector splitter = null;
+      Data data = null;
+      try
+      {
+         splitter = pool.take();
+         String[] sentences = splitter.sentDetect(input.getPayload());
+         logger.info("Execution complete.");
+         data = DataFactory.stringList(sentences);
+         data.setDiscriminator(Types.OPENNLP);
+      }
+      catch (InterruptedException e)
+      {
+         data = DataFactory.error(e.getMessage());
+      }
+      finally
+      {
+         pool.add(splitter);
+      }
+      return data;
    }
 
    public Data configure(Data config)
    {
-      return DataFactory.ok();
+      return DataFactory.error("Unsupported operation.");
    }
 
    public static void main(String[] args)

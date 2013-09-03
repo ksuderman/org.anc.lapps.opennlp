@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * @author Keith Suderman
@@ -19,8 +21,10 @@ import java.io.IOException;
 public class Tokenizer implements WebService
 {
    private static final Logger logger = LoggerFactory.getLogger(Tokenizer.class);
+   private static final int POOL_SIZE = 4;
 
-   protected opennlp.tools.tokenize.Tokenizer tokenizer;
+   //protected opennlp.tools.tokenize.Tokenizer tokenizer;
+   protected BlockingQueue<TokenizerME> pool;
    protected String error;
 
    public Tokenizer()
@@ -30,12 +34,17 @@ public class Tokenizer implements WebService
       if (stream == null)
       {
          error = "Unable to load tokenizer model.";
-      } else try
+      }
+      else try
       {
          try
          {
             TokenizerModel model = new TokenizerModel(stream);
-            tokenizer = new TokenizerME(model);
+            pool = new ArrayBlockingQueue<TokenizerME>(POOL_SIZE);
+            for (int i = 0; i < POOL_SIZE; ++i)
+            {
+               pool.add(new TokenizerME(model));
+            }
          }
          finally
          {
@@ -45,7 +54,7 @@ public class Tokenizer implements WebService
       catch (IOException e)
       {
          logger.error("Unable to create the tokenizer", e);
-         if (tokenizer == null)
+         if (error == null)
          {
             error = e.getMessage();
          }
@@ -68,23 +77,38 @@ public class Tokenizer implements WebService
    public Data execute(Data input)
    {
       logger.info("Executing OpenNLP tokenizer.");
-      if (tokenizer == null)
+      if (error != null)
       {
-         if (error == null)
-         {
-            error = "Unable to instantiate the tokenizer.";
-         }
          logger.error(error);
          return DataFactory.error(error);
       }
-      String[] tokens = tokenizer.tokenize(input.getPayload());
-      logger.info("Tokenizer complete.");
-      return DataFactory.stringList(tokens);
+      TokenizerME tokenizer = null;
+      Data data = null;
+      try
+      {
+         tokenizer = pool.take();
+         String[] tokens = tokenizer.tokenize(input.getPayload());
+         logger.info("Tokenizer complete.");
+         data = DataFactory.stringList(tokens);
+         data.setDiscriminator(Types.OPENNLP);
+      }
+      catch (Exception e)
+      {
+         data = DataFactory.error(e.getMessage());
+      }
+      finally
+      {
+         if (tokenizer != null)
+         {
+            pool.add(tokenizer);
+         }
+      }
+      return data;
    }
 
    @Override
    public Data configure(Data config)
    {
-      return DataFactory.ok();
+      return DataFactory.error("Unsupported operation.");
    }
 }
