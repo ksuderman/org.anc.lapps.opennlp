@@ -29,14 +29,9 @@ public class SentenceSplitter implements WebService
 
    public SentenceSplitter() throws IOException
    {
-      logger.info("Creating a OpenNLP sentence splitter.");
-      ClassLoader loader = Thread.currentThread().getContextClassLoader();
-      if (loader == null)
-      {
-         loader = SentenceSplitter.class.getClassLoader();
-      }
+      logger.info("Creating an OpenNLP sentence splitter.");
       logger.debug("Loading en-sent.bin");
-      InputStream stream = loader.getResourceAsStream("en-sent.bin");
+      InputStream stream = ResourceLoader.open("en-sent.bin");
       if (stream == null)
       {
          throw new IOException("Unable to load sentence model.");

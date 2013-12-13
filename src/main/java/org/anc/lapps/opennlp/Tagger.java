@@ -36,7 +36,6 @@ public class Tagger implements WebService
    public Tagger()
    {
       logger.info("Creating OpenNLP tagger.");
-//      ResourceLoader loader = new ResourceLoader();
       InputStream stream = ResourceLoader.open("en-pos-maxent.bin");
       if (stream == null)
       {
@@ -68,13 +67,13 @@ public class Tagger implements WebService
    @Override
    public long[] requires()
    {
-      return new long[] { Types.OPENNLP, Types.SENTENCE, Types.TOKEN };
+      return new long[] { Types.OPENNLP, Types.TOKEN };
    }
 
    @Override
    public long[] produces()
    {
-      return new long[] { Types.OPENNLP, Types.SENTENCE, Types.TOKEN, Types.POS };
+      return new long[] { Types.OPENNLP, Types.TOKEN, Types.POS };
    }
 
    @Override
@@ -97,13 +96,13 @@ public class Tagger implements WebService
       {
          tagger = pool.take();
          String[] tagged = tagger.tag(sentences);
-         List<String> combined = new ArrayList<String>();
-         for (int i = 0; i < sentences.length; ++i)
-         {
-            combined.add(sentences[i] +"/" + tagged[i]);
-         }
+//         List<String> combined = new ArrayList<String>();
+//         for (int i = 0; i < sentences.length; ++i)
+//         {
+//            combined.add(sentences[i] +"/" + tagged[i]);
+//         }
          logger.info("Tagger complete.");
-         data = DataFactory.stringList(combined);
+         data = DataFactory.stringList(tagged);
          data.setDiscriminator(Types.OPENNLP);
       }
       catch (InterruptedException e)

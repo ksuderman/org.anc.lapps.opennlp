@@ -10,8 +10,8 @@
     <groupId>org.anc.lapps</groupId>
     <artifactId>opennlp</artifactId>
     <packaging>war</packaging>
-    <version>1.0.0-SNAPSHOT</version>
-    <name>Tools: OpenNLP</name>
+    <version>1.0.0</version>
+    <name>Services: OpenNLP</name>
     <description>LAPPS wrappers for the OpenNLP toolchain.</description>
     <scm>
         <connection>https://github.com/ksuderman/org.anc.lapps.stanford.git</connection>
@@ -21,7 +21,7 @@
         <lapps.version>1.0.1-SNAPSHOT</lapps.version>
     </properties>
     <build>
-        <finalName>OpenNLPServices</finalName>
+        <finalName>OpenNLPServices#${project.version}</finalName>
     </build>
     <dependencies>
         <dependency>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>org.lappsgrid</groupId>
             <artifactId>discriminator</artifactId>
-            <version>1.2.0</version>
+            <version>1.2.1</version>
         </dependency>
     </dependencies>
 </project>
